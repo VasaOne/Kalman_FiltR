@@ -1,13 +1,14 @@
-#pragma oncetruct every time you us
+#pragma once
+#include <chrono>
+#include <random>
+
+#define deltaT 1
 
 //cartesian ref 2D
 typedef struct {
 	float x;
 	float y;
 } cartVal;
-
-
-
 
 class Trajectory{
 	public:
@@ -24,7 +25,7 @@ class Trajectory{
 class MoovObj {
 	public: 
 		MoovObj();
-		void moovTo();
+		void change_acc(cartVal acc);
 		void actualize();
 		cartVal get_pos();
 		cartVal get_speed();
@@ -35,12 +36,12 @@ class MoovObj {
 		cartVal position;
 		cartVal speed;
 		cartVal accel;
-		cartVal goalPos;
 };
 
 
 class IMU { //model of white gaussian noise
 	public: 
+		IMU(float mean, float cov);
 		IMU();
 		float getMean();
 		float getCov();
@@ -48,14 +49,16 @@ class IMU { //model of white gaussian noise
 	private:
 		float mean; // mu noise model
 		float cov; //s2 noise model 
+		std::default_random_engine generator;
+		std::normal_distribution<float> distribution;
 };
 
 class Drone: public MoovObj{
 	public:
-		Drone();
+		Drone(float mean, float cov);
+		cartVal getACC();
 	private:
 		IMU imu;
-		int speed;
 };
 
 class Map{
